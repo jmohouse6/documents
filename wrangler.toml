@@ -1,0 +1,33 @@
+name = "documents"
+main = "src/index.ts"
+compatibility_date = "2025-09-06"
+
+[[r2_buckets]]
+binding = "PDF_BUCKET"
+bucket_name = "moorhouse-documents-dev"
+
+[vars]
+PUBLIC_BASE_URL = "http://localhost:8787"
+
+[env.staging]
+name = "documents-staging"
+
+[env.staging.vars]
+PUBLIC_BASE_URL = "https://documents-staging.jason-d6c.workers.dev"
+
+[[env.staging.r2_buckets]]
+binding = "PDF_BUCKET"
+bucket_name = "moorhouse-documents-staging"
+
+[env.production]
+name = "documents"
+routes = [
+  { pattern = "documents.moorhousecoating.com", custom_domain = true }
+]
+
+[env.production.vars]
+PUBLIC_BASE_URL = "https://documents.moorhousecoating.com"
+
+[[env.production.r2_buckets]]
+binding = "PDF_BUCKET"
+bucket_name = "moorhouse-documents-prod"
