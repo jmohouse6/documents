@@ -144,6 +144,54 @@ describe('Documents service', () => {
     await get.arrayBuffer();
   });
 
+  it('POST /api/render creates a signed waiver PDF', async () => {
+    const payload = {
+      type: 'waiver',
+      id: 'w-test-signed',
+      data: {
+        waiver: {
+          id: 'w-test-signed',
+          waiver_type: 'unconditional_progress',
+          amount_cents: 90000,
+          through_date: '2026-07-31',
+          status: 'signed',
+          created_at: '2026-07-31T00:00:00Z',
+          signer_name: 'Alice Smith',
+          signer_email: 'alice@example.com',
+          signed_at: '2026-07-31T00:00:00Z',
+          signed_document_url: 'https://example.com/signed.pdf',
+        },
+        pay_app: {
+          application_number: 1,
+        },
+        contract: {
+          name: 'Moorhouse HQ repaint',
+          gc_name: 'GC Builders',
+        },
+      },
+    };
+
+    const response = await SELF.fetch(new URL('/api/render', baseUrl), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': testApiKey },
+      body: JSON.stringify(payload),
+    });
+
+    expect(response.status).toBe(201);
+    const body = (await response.json()) as { id: string; url: string };
+    expect(body.id).toBe('w-test-signed');
+
+    const stored = await env.PDF_BUCKET.get('pdfs/waiver/w-test-signed.pdf');
+    expect(stored).toBeDefined();
+    expect(stored?.size).toBeGreaterThan(0);
+    await stored?.arrayBuffer();
+
+    const get = await SELF.fetch(new URL('/api/documents/w-test-signed', baseUrl));
+    expect(get.status).toBe(200);
+    expect(get.headers.get('content-type')).toBe('application/pdf');
+    await get.arrayBuffer();
+  });
+
   it('GET /api/documents/:id returns 404 for missing document', async () => {
     const response = await SELF.fetch(new URL('/api/documents/missing-id', baseUrl));
     expect(response.status).toBe(404);

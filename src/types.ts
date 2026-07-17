@@ -50,6 +50,10 @@ export interface WaiverData {
     through_date: string | null;
     status: string;
     created_at: string;
+    signer_name?: string;
+    signer_email?: string;
+    signed_at?: string;
+    signed_document_url?: string;
   };
   pay_app: {
     application_number: number;

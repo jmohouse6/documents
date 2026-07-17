@@ -64,8 +64,15 @@ export async function createWaiverPdf(data: WaiverData): Promise<Uint8Array> {
 
   y = drawText(page, helveticaBold, 12, 50, y, 'Signature');
   y -= 6;
-  y = drawText(page, helvetica, 10, 50, y, '_________________________________    Date: _______________');
-  y -= 24;
+  const hasSigner = !!waiver.signer_name;
+  const signatureLine = hasSigner ? waiver.signer_name : '_________________________________';
+  const dateLine = hasSigner && waiver.signed_at ? formatDate(waiver.signed_at) : '_______________';
+  y = drawText(page, helvetica, 10, 50, y, `${signatureLine}    Date: ${dateLine}`);
+  y -= 12;
+  if (waiver.status === 'signed') {
+    y = drawText(page, helvetica, 8, 50, y, `Electronically signed on ${waiver.signed_at ? formatDate(waiver.signed_at) : '—'}`);
+    y -= 12;
+  }
 
   y = drawText(page, helvetica, 8, 50, y, `Document ID: ${waiver.id}`);
   y = drawText(page, helvetica, 8, 50, y, `Generated: ${new Date().toLocaleDateString('en-US')}`);
