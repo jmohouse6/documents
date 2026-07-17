@@ -34,7 +34,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: echo "API_KEY=${{ secrets.API_KEY }}" > .dev.vars
+      - run: echo 'API_KEY=test-api-key' > .dev.vars
       - run: pnpm test
 
   deploy-staging:
