@@ -4,7 +4,12 @@ export default defineWorkersConfig({
   test: {
     poolOptions: {
       workers: {
-        wrangler: { configPath: './wrangler.toml' },
+        wrangler: {
+          configPath: './wrangler.toml',
+          vars: {
+            API_KEY: 'test-api-key',
+          },
+        },
       },
     },
   },
